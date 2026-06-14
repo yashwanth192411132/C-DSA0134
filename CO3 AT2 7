@@ -1,0 +1,50 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Mobile
+{
+private:
+    string brand;
+    double price;
+
+public:
+    Mobile()
+    {
+        brand = "Samsung";
+        price = 15000;
+        cout << "Default Constructor\n";
+    }
+
+    Mobile(string b, double p)
+    {
+        brand = b;
+        price = p;
+        cout << "Parameterized Constructor\n";
+    }
+
+    Mobile(const Mobile &m)
+    {
+        brand = m.brand;
+        price = m.price;
+        cout << "Copy Constructor\n";
+    }
+
+    void display()
+    {
+        cout << brand << " " << price << endl;
+    }
+};
+
+int main()
+{
+    Mobile m1;
+    Mobile m2("Apple", 70000);
+    Mobile m3 = m2;
+
+    m1.display();
+    m2.display();
+    m3.display();
+
+    return 0;
+}
