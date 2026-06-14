@@ -1,0 +1,34 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+class FileHandler
+{
+private:
+    fstream file;
+
+public:
+    FileHandler()
+    {
+        file.open("data.txt", ios::out);
+
+        if (file.is_open())
+            cout << "File Opened Successfully\n";
+    }
+
+    ~FileHandler()
+    {
+        if (file.is_open())
+        {
+            file.close();
+            cout << "File Closed Successfully\n";
+        }
+    }
+};
+
+int main()
+{
+    FileHandler f1;
+
+    return 0;
+}
