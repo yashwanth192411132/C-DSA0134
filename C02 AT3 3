@@ -1,0 +1,193 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Product
+{
+private:
+    string productName;
+    double price;
+    int quantitySold;
+
+public:
+    void getData()
+    {
+        cout << "Enter Product Name: ";
+        cin >> productName;
+
+        do
+        {
+            cout << "Enter Price: ";
+            cin >> price;
+        } while (price <= 0);
+
+        do
+        {
+            cout << "Enter Quantity Sold: ";
+            cin >> quantitySold;
+        } while (quantitySold < 0);
+    }
+
+    double calculateSales()
+    {
+        return price * quantitySold;
+    }
+
+    string getProductName()
+    {
+        return productName;
+    }
+
+    void display()
+    {
+        cout << "\nProduct Name  : " << productName;
+        cout << "\nPrice         : " << price;
+        cout << "\nQuantity Sold : " << quantitySold;
+        cout << "\nSales Amount  : " << calculateSales() << endl;
+    }
+};
+
+class Store
+{
+private:
+    int storeID;
+    Product *products;
+    int productCount;
+    static double overallSales;
+
+public:
+    void getStoreData(int id)
+    {
+        storeID = id;
+
+        cout << "\nEnter Number of Products in Store "
+             << storeID << ": ";
+        cin >> productCount;
+
+        products = new Product[productCount];
+
+        for (int i = 0; i < productCount; i++)
+        {
+            cout << "\nProduct " << i + 1 << endl;
+            products[i].getData();
+        }
+    }
+
+    double calculateStoreSales()
+    {
+        double total = 0;
+
+        for (int i = 0; i < productCount; i++)
+        {
+            total += products[i].calculateSales();
+        }
+
+        overallSales += total;
+        return total;
+    }
+
+    int getStoreID()
+    {
+        return storeID;
+    }
+
+    int getProductCount()
+    {
+        return productCount;
+    }
+
+    Product* getProducts()
+    {
+        return products;
+    }
+
+    void displayStore()
+    {
+        cout << "\n===== Store " << storeID << " =====\n";
+
+        for (int i = 0; i < productCount; i++)
+        {
+            products[i].display();
+        }
+    }
+
+    static double getOverallSales()
+    {
+        return overallSales;
+    }
+
+    ~Store()
+    {
+        delete[] products;
+    }
+};
+
+double Store::overallSales = 0;
+
+int main()
+{
+    int n;
+
+    cout << "Enter Number of Stores: ";
+    cin >> n;
+
+    Store stores[n];
+
+    for (int i = 0; i < n; i++)
+    {
+        stores[i].getStoreData(i + 1);
+    }
+
+    double maxStoreSales = -1;
+    int bestStore = -1;
+
+    double maxProductRevenue = -1;
+    string bestProduct = "";
+
+    cout << "\n\n===== STORE REPORT =====\n";
+
+    for (int i = 0; i < n; i++)
+    {
+        stores[i].displayStore();
+
+        double storeSales = stores[i].calculateStoreSales();
+
+        cout << "\nTotal Sales of Store "
+             << stores[i].getStoreID()
+             << " = " << storeSales << endl;
+
+        if (storeSales > maxStoreSales)
+        {
+            maxStoreSales = storeSales;
+            bestStore = stores[i].getStoreID();
+        }
+
+        Product *p = stores[i].getProducts();
+
+        for (int j = 0; j < stores[i].getProductCount(); j++)
+        {
+            double revenue = p[j].calculateSales();
+
+            if (revenue > maxProductRevenue)
+            {
+                maxProductRevenue = revenue;
+                bestProduct = p[j].getProductName();
+            }
+        }
+    }
+
+    cout << "\n===== RETAIL CHAIN SUMMARY =====\n";
+
+    cout << "Overall Sales           : "
+         << Store::getOverallSales() << endl;
+
+    cout << "Best Performing Store   : Store "
+         << bestStore
+         << " (Sales = " << maxStoreSales << ")" << endl;
+
+    cout << "Best Selling Product    : "
+         << bestProduct
+         << " (Revenue = " << maxProductRevenue << ")" << endl;
+
+    return 0;
+}
