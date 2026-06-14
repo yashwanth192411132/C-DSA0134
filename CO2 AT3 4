@@ -1,0 +1,210 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Team
+{
+private:
+    string teamName;
+    int matchesPlayed;
+    int wins;
+    int draws;
+    int losses;
+    int goalsScored;
+    int goalsConceded;
+    static int totalTeams;
+
+public:
+    void getData()
+    {
+        cout << "Enter Team Name: ";
+        cin >> teamName;
+
+        do
+        {
+            cout << "Matches Played: ";
+            cin >> matchesPlayed;
+        } while (matchesPlayed < 0);
+
+        do
+        {
+            cout << "Wins: ";
+            cin >> wins;
+        } while (wins < 0);
+
+        do
+        {
+            cout << "Draws: ";
+            cin >> draws;
+        } while (draws < 0);
+
+        do
+        {
+            cout << "Losses: ";
+            cin >> losses;
+        } while (losses < 0);
+
+        do
+        {
+            cout << "Goals Scored: ";
+            cin >> goalsScored;
+        } while (goalsScored < 0);
+
+        do
+        {
+            cout << "Goals Conceded: ";
+            cin >> goalsConceded;
+        } while (goalsConceded < 0);
+
+        totalTeams++;
+    }
+
+    int calculatePoints()
+    {
+        return (wins * 3) + draws;
+    }
+
+    int goalDifference()
+    {
+        return goalsScored - goalsConceded;
+    }
+
+    int getWins()
+    {
+        return wins;
+    }
+
+    int getGoalsScored()
+    {
+        return goalsScored;
+    }
+
+    string getTeamName()
+    {
+        return teamName;
+    }
+
+    void display()
+    {
+        cout << "\nTeam Name       : " << teamName;
+        cout << "\nMatches Played  : " << matchesPlayed;
+        cout << "\nWins            : " << wins;
+        cout << "\nDraws           : " << draws;
+        cout << "\nLosses          : " << losses;
+        cout << "\nGoals Scored    : " << goalsScored;
+        cout << "\nGoals Conceded  : " << goalsConceded;
+        cout << "\nGoal Difference : " << goalDifference();
+        cout << "\nTotal Points    : " << calculatePoints() << endl;
+    }
+
+    static int getTotalTeams()
+    {
+        return totalTeams;
+    }
+};
+
+int Team::totalTeams = 0;
+
+int betterTeam(Team a, Team b)
+{
+    if (a.calculatePoints() > b.calculatePoints())
+        return 1;
+
+    if (a.calculatePoints() < b.calculatePoints())
+        return 2;
+
+    if (a.goalDifference() > b.goalDifference())
+        return 1;
+
+    if (a.goalDifference() < b.goalDifference())
+        return 2;
+
+    if (a.getWins() > b.getWins())
+        return 1;
+
+    if (a.getWins() < b.getWins())
+        return 2;
+
+    if (a.getGoalsScored() > b.getGoalsScored())
+        return 1;
+
+    if (a.getGoalsScored() < b.getGoalsScored())
+        return 2;
+
+    return 0;
+}
+
+int main()
+{
+    int groups;
+
+    cout << "Enter Number of Groups: ";
+    cin >> groups;
+
+    Team groupWinners[groups];
+
+    for (int i = 0; i < groups; i++)
+    {
+        int teams;
+
+        cout << "\nEnter Number of Teams in Group "
+             << i + 1 << ": ";
+        cin >> teams;
+
+        Team t[teams];
+
+        for (int j = 0; j < teams; j++)
+        {
+            cout << "\nEnter Details for Team "
+                 << j + 1 << endl;
+            t[j].getData();
+        }
+
+        cout << "\n===== Group " << i + 1
+             << " Teams =====\n";
+
+        for (int j = 0; j < teams; j++)
+        {
+            t[j].display();
+        }
+
+        int winnerIndex = 0;
+
+        for (int j = 1; j < teams; j++)
+        {
+            int result = betterTeam(t[j], t[winnerIndex]);
+
+            if (result == 1)
+                winnerIndex = j;
+        }
+
+        groupWinners[i] = t[winnerIndex];
+
+        cout << "\nGroup " << i + 1
+             << " Winner : "
+             << groupWinners[i].getTeamName()
+             << endl;
+    }
+
+    int championIndex = 0;
+
+    for (int i = 1; i < groups; i++)
+    {
+        int result = betterTeam(groupWinners[i],
+                                groupWinners[championIndex]);
+
+        if (result == 1)
+            championIndex = i;
+    }
+
+    cout << "\n===== TOURNAMENT CHAMPION =====\n";
+    cout << "Champion Team : "
+         << groupWinners[championIndex].getTeamName()
+         << endl;
+
+    cout << "\nTotal Teams Participated : "
+         << Team::getTotalTeams()
+         << endl;
+
+    return 0;
+}
