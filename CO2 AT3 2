@@ -1,0 +1,141 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Candidate
+{
+private:
+    string name;
+    int votes;
+    static int totalCandidates;
+
+public:
+    void getData()
+    {
+        cout << "Enter Candidate Name: ";
+        cin >> name;
+
+        do
+        {
+            cout << "Enter Votes: ";
+            cin >> votes;
+        } while (votes < 0);
+
+        totalCandidates++;
+    }
+
+    string getName()
+    {
+        return name;
+    }
+
+    int getVotes()
+    {
+        return votes;
+    }
+
+    static int getTotalCandidates()
+    {
+        return totalCandidates;
+    }
+};
+
+int Candidate::totalCandidates = 0;
+
+int main()
+{
+    int regions, candidates;
+
+    cout << "Enter Number of Regions: ";
+    cin >> regions;
+
+    cout << "Enter Number of Candidates: ";
+    cin >> candidates;
+
+    Candidate **election = new Candidate*[regions];
+
+    int *totalVotes = new int[candidates];
+
+    for (int i = 0; i < candidates; i++)
+        totalVotes[i] = 0;
+
+    string candidateNames[candidates];
+
+    for (int i = 0; i < regions; i++)
+    {
+        election[i] = new Candidate[candidates];
+
+        cout << "\nRegion " << i + 1 << endl;
+
+        int maxVotes = -1;
+        bool tie = false;
+        string regionWinner = "";
+
+        for (int j = 0; j < candidates; j++)
+        {
+            cout << "\nCandidate " << j + 1 << endl;
+            election[i][j].getData();
+
+            if (i == 0)
+                candidateNames[j] = election[i][j].getName();
+
+            int votes = election[i][j].getVotes();
+            totalVotes[j] += votes;
+
+            if (votes > maxVotes)
+            {
+                maxVotes = votes;
+                regionWinner = election[i][j].getName();
+                tie = false;
+            }
+            else if (votes == maxVotes)
+            {
+                tie = true;
+            }
+        }
+
+        cout << "\nRegion " << i + 1 << " Result: ";
+
+        if (tie)
+            cout << "Tie\n";
+        else
+            cout << regionWinner << " Wins\n";
+    }
+
+    int overallMax = -1;
+    bool overallTie = false;
+    string overallWinner = "";
+
+    for (int i = 0; i < candidates; i++)
+    {
+        if (totalVotes[i] > overallMax)
+        {
+            overallMax = totalVotes[i];
+            overallWinner = candidateNames[i];
+            overallTie = false;
+        }
+        else if (totalVotes[i] == overallMax)
+        {
+            overallTie = true;
+        }
+    }
+
+    cout << "\n===== Overall Election Result =====\n";
+
+    if (overallTie)
+        cout << "Overall Election Result: Tie\n";
+    else
+        cout << "Overall Winner: " << overallWinner
+             << " (" << overallMax << " Votes)\n";
+
+    cout << "\nTotal Candidate Records: "
+         << Candidate::getTotalCandidates() << endl;
+
+    for (int i = 0; i < regions; i++)
+        delete[] election[i];
+
+    delete[] election;
+    delete[] totalVotes;
+
+    return 0;
+}
