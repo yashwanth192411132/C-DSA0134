@@ -1,0 +1,31 @@
+#include <iostream>
+using namespace std;
+
+class Test
+{
+public:
+    Test()
+    {
+        cout << "Constructor Called\n";
+    }
+
+    ~Test()
+    {
+        cout << "Destructor Called\n";
+    }
+};
+
+int main()
+{
+    Test t1;
+
+    {
+        Test t2;
+
+        {
+            Test t3;
+        }
+    }
+
+    return 0;
+}
