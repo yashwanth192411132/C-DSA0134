@@ -1,0 +1,145 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Student
+{
+private:
+    string name;
+    int marks;
+    static int totalStudents;
+
+public:
+    void getData()
+    {
+        cout << "Enter Student Name: ";
+        cin >> name;
+
+        do
+        {
+            cout << "Enter Marks (0-100): ";
+            cin >> marks;
+        } while (marks < 0 || marks > 100);
+
+        totalStudents++;
+    }
+
+    int getMarks()
+    {
+        return marks;
+    }
+
+    string getName()
+    {
+        return name;
+    }
+
+    static int getTotalStudents()
+    {
+        return totalStudents;
+    }
+};
+
+int Student::totalStudents = 0;
+
+int main()
+{
+    int departments;
+
+    cout << "Enter Number of Departments: ";
+    cin >> departments;
+
+    Student* dept[departments];
+    int size[departments];
+
+    string deptTopperName[departments];
+    int deptTopperMarks[departments];
+
+    string universityTopper = "";
+    int universityTopMarks = -1;
+
+    for (int i = 0; i < departments; i++)
+    {
+        cout << "\nEnter Number of Students in Department "
+             << i + 1 << ": ";
+        cin >> size[i];
+
+        if (size[i] > 0)
+            dept[i] = new Student[size[i]];
+        else
+            dept[i] = NULL;
+
+        int passCount = 0;
+        int topMarks = -1;
+        string topName = "";
+
+        for (int j = 0; j < size[i]; j++)
+        {
+            cout << "\nStudent " << j + 1 << endl;
+            dept[i][j].getData();
+
+            int marks = dept[i][j].getMarks();
+
+            if (marks >= 40)
+                passCount++;
+
+            if (marks > topMarks)
+            {
+                topMarks = marks;
+                topName = dept[i][j].getName();
+            }
+
+            if (marks > universityTopMarks)
+            {
+                universityTopMarks = marks;
+                universityTopper = dept[i][j].getName();
+            }
+        }
+
+        deptTopperName[i] = topName;
+        deptTopperMarks[i] = topMarks;
+
+        cout << "\nDepartment " << i + 1 << " Pass Percentage = ";
+
+        if (size[i] == 0)
+            cout << "0%\n";
+        else
+            cout << (passCount * 100.0) / size[i] << "%\n";
+    }
+
+    cout << "\n===== Department Toppers =====\n";
+
+    for (int i = 0; i < departments; i++)
+    {
+        if (size[i] == 0)
+        {
+            cout << "Department " << i + 1
+                 << " : No Students\n";
+        }
+        else
+        {
+            cout << "Department " << i + 1
+                 << " Topper : "
+                 << deptTopperName[i]
+                 << " (" << deptTopperMarks[i] << ")\n";
+        }
+    }
+
+    cout << "\n===== University Topper =====\n";
+
+    if (Student::getTotalStudents() == 0)
+        cout << "No Students Available\n";
+    else
+        cout << universityTopper
+             << " (" << universityTopMarks << " Marks)\n";
+
+    cout << "\nTotal Students = "
+         << Student::getTotalStudents() << endl;
+
+    for (int i = 0; i < departments; i++)
+    {
+        delete[] dept[i];
+    }
+
+    return 0;
+}
