@@ -1,0 +1,194 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+//================== ABSTRACT CLASS ==================
+class Person
+{
+protected:
+    string name;
+    int age;
+
+public:
+    Person(string n, int a)
+    {
+        name = n;
+        age = a;
+    }
+
+    virtual void display() = 0;
+
+    virtual ~Person()
+    {
+        cout << "Person Destructor Called\n";
+    }
+};
+
+//================== BASE CLASS ==================
+class Patient : public Person
+{
+protected:
+    int patientID;
+    double bill;
+
+public:
+    Patient(string n, int a, int id, double b)
+        : Person(n, a)
+    {
+        patientID = id;
+        bill = b;
+    }
+
+    // Operator Overloading
+    Patient operator+(double amount)
+    {
+        bill += amount;
+        return *this;
+    }
+
+    // Function Overloading
+    void updateBill(int amount)
+    {
+        bill += amount;
+    }
+
+    void updateBill(double amount)
+    {
+        bill += amount;
+    }
+
+    virtual void display()
+    {
+        cout << "\nPatient Name : " << name;
+        cout << "\nAge          : " << age;
+        cout << "\nPatient ID   : " << patientID;
+        cout << "\nBill         : " << bill << endl;
+    }
+
+    virtual ~Patient()
+    {
+        cout << "Patient Destructor Called\n";
+    }
+
+    double getBill()
+    {
+        return bill;
+    }
+
+    string getName()
+    {
+        return name;
+    }
+};
+
+//================== SINGLE INHERITANCE ==================
+class InPatient : public Patient
+{
+protected:
+    int roomNo;
+
+public:
+    InPatient(string n, int a, int id, double b, int room)
+        : Patient(n, a, id, b)
+    {
+        roomNo = room;
+    }
+
+    void display()
+    {
+        cout << "\n----- InPatient Details -----";
+        Patient::display();
+        cout << "Room Number : " << roomNo << endl;
+    }
+
+    ~InPatient()
+    {
+        cout << "InPatient Destructor Called\n";
+    }
+};
+
+//================== MULTILEVEL INHERITANCE ==================
+class CriticalPatient : public InPatient
+{
+    string icu;
+
+public:
+    CriticalPatient(string n, int a, int id, double b,
+                    int room, string icuType)
+        : InPatient(n, a, id, b, room)
+    {
+        icu = icuType;
+    }
+
+    void display()
+    {
+        cout << "\n***** Critical Patient *****";
+        InPatient::display();
+        cout << "ICU Type : " << icu << endl;
+    }
+
+    ~CriticalPatient()
+    {
+        cout << "CriticalPatient Destructor Called\n";
+    }
+};
+
+//================== FILE HANDLING ==================
+void saveFile(Patient *p)
+{
+    ofstream file("patients.txt", ios::app);
+
+    file << p->getName() << " "
+         << p->getBill() << endl;
+
+    file.close();
+}
+
+//================== MAIN ==================
+int main()
+{
+    try
+    {
+        int age;
+
+        cout << "Enter Age : ";
+        cin >> age;
+
+        if(age <= 0)
+            throw "Invalid Age";
+
+        // Dynamic Memory Allocation
+        Patient *obj = new CriticalPatient(
+            "Rahul",
+            age,
+            101,
+            5000,
+            301,
+            "ICU-A"
+        );
+
+        obj->display();
+
+        // Function Overloading
+        obj->updateBill(500);
+        obj->updateBill(250.75);
+
+        // Operator Overloading
+        *obj = *obj + 1000;
+
+        cout << "\nAfter Bill Update\n";
+        obj->display();
+
+        saveFile(obj);
+
+        delete obj;
+    }
+
+    catch(const char *msg)
+    {
+        cout << "\nException : " << msg << endl;
+    }
+
+    return 0;
+}
